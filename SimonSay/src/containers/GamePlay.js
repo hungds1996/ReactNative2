@@ -59,9 +59,7 @@ class GamePlay extends Component {
       };
 
         _gameOver = () => {
-            this.setState({
-                isPlaying : false
-            });
+            this.props.setCondition(this.state.requirement.length)
         }
 
       render() {
@@ -73,39 +71,46 @@ class GamePlay extends Component {
             bgColor={color}
           />
         ));
-
-        const styles = StyleSheet.create({
-            container: {
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "#F5FCFF"
-            },
-            welcome: {
-              fontSize: 20,
-              textAlign: "center",
-              margin: 10
-            },
-            instructions: {
-              textAlign: "center",
-              color: "#333333",
-              marginBottom: 5
-            }
-          });
     
         return (
-            this.state.isPlaying ?
-            (<View style={styles.container}>
+            <View style={styles.container}>
+                <Text>score : {this.state.requirement.length - 1}</Text>
                 <Text>requirement : {this.state.requirement}</Text>
                 <Text>input : {this.state.input}</Text>
-                {buttons}
-            </View>) :
-            <GameOver/>
-
+                <View style={styles.buttonContainer}>
+                  {buttons}
+                </View>
+                
+            </View>
         );
       }
-
-      
     }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5FCFF"
+  },
+  buttonContainer: {
+    width: "70%",
+    height: "70%",
+    flexWrap: "wrap",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: "center",
+    margin: 10
+  },
+  instructions: {
+    textAlign: "center",
+    color: "#333333",
+    marginBottom: 5
+  }
+});
 
 export default GamePlay ;

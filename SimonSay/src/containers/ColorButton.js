@@ -17,13 +17,12 @@ class ColorButton extends Component {
 
     render() {
         return (
-            <TouchableOpacity onPress={this.onPress}>
+            <TouchableOpacity onPress={this.onPress} style={{ margin: "2%", width : "46%", height : "46%" }}>
             <View
                 style={{
-                    width: 40,
-                    height: 40,
                     backgroundColor: this.props.bgColor,
-                    borderRadius: 5
+                    borderRadius: 5,
+                    flex:1,
                 }}>
             </View>
             </TouchableOpacity>    

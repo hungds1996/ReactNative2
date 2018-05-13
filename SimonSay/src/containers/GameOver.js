@@ -4,15 +4,33 @@ import {
   Text,
   View,
   Button,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from 'react-native';
 
 class GameOver extends Component {
   state = {  }
+
+  _onPress = () => {
+    this.props.setCondition()
+  }
+
   render() {
     return (
-        <Text>Game Over</Text>,
-        <Button>Back</Button>
+        <View>
+          <Text>Your final score is {this.props.finalScore}</Text>
+          <TouchableOpacity onPress={this._onPress}>
+            <View
+                style={{
+                    width: 140,
+                    height: 40,
+                    backgroundColor: "#333333",
+                    borderRadius: 5
+                }}>
+            <Text> Play again </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
     );
   }
 }
