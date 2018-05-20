@@ -1,116 +1,149 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
+  Platform,
   StyleSheet,
   Text,
   View,
-  Button
-} from 'react-native';
-import ColorButton from './ColorButton'
-import GameOver from './GameOver'
+  Button,
+  Dimensions,
+  Animated
+} from "react-native";
+
+import ColorButton from "../components/ColorButton";
+import Sound from "react-native-sound";
 
 class GamePlay extends Component {
-    state = {
-        colors: ["red", "green", "blue", "yellow"],
-        requirement: [],
-        input: [],
-        isPlaying: true,
-      };
-      componentDidMount() {
-        this._firstStart();
+  state = {
+    colors: ["red", "green", "blue", "yellow"],
+    requirement: [],
+    answers: [],
+    opacity: [
+      new Animated.Value(1),
+      new Animated.Value(1),
+      new Animated.Value(1),
+      new Animated.Value(1)
+    ],
+    buttonsDisabled: false,
+    sound: [
+      new Sound("pling1.mp3", Sound.MAIN_BUNDLE, (error) => {
+        error ? console.log('failed to load') : console.log('none')
+      }),
+      new Sound("pling2.mp3", Sound.MAIN_BUNDLE, (error) => {
+        error ? console.log('failed to load') : console.log('none')
+      }),
+      new Sound("pling3.mp3", Sound.MAIN_BUNDLE, (error) => {
+        error ? console.log('failed to load') : console.log('none')
+      }),
+      new Sound("pling4.mp3", Sound.MAIN_BUNDLE, (error) => {
+        error ? console.log('failed to load') : console.log('none')
+      }),
+    ],
+  };
+
+  componentDidMount() {
+    this._increaseDifficulty();
+  }
+
+  _increaseDifficulty = () => {
+    this.setState(
+      {
+        requirement: this.state.requirement.concat(
+          Math.floor(Math.random() * 4)
+        ),
+        answers: [],
+        buttonsDisabled: true
+      },
+      () => {
+        this._flashButton(0);
       }
-    
-        _firstStart = () =>
-        this.setState({
-          requirement: [Math.floor(Math.random() * 4)],
-          input: []
-        });
+    );
+  };
 
-        _makeHarder = (id) => {
-            id == this.state.requirement[this.state.input.length] ? 
-            this._inputRefresh(id) : 
-            this._gameOver()
-        } 
+  _flashButton = index => {
+    index < this.state.requirement.length
+      ? Animated.sequence([
+          Animated.timing(this.state.opacity[this.state.requirement[index]], {
+            toValue: 0,
+            duration: 250
+          }),
+          Animated.delay(500),
+          Animated.timing(this.state.opacity[this.state.requirement[index]], {
+            toValue: 1,
+            duration: 250
+          }),
+        ]).start(() => {
+          this._playSound(this.state.requirement[index]),
+          this._flashButton(index + 1)
+        })
+      : this.setState({ buttonsDisabled: false });
+  };
 
-        _onButtonPressed = (id) => {
-            this.state.input.length == this.state.requirement.length - 1 ? 
-            this._makeHarder(id) :
-            this._inputContinue(id) 
-            };
-        
-        _addInput = (id) => {
-            this.setState({
-                input: this.state.input.concat(id),
-            });
-        }
+  _playSound = id => {
+    this.state.sound[id].stop(() => this.state.sound[id].play())
+  };
 
-        _inputContinue = (id) => {
-            id == this.state.requirement[this.state.input.length] ?
-            this._addInput(id) :
-            this._gameOver()
-        }
-        
-      _inputRefresh = (id) => {
-        this.setState(
-          {
-            input: [],
-            requirement: this.state.requirement.concat(Math.floor(Math.random() * 4)),
-          },
-        );
-      };
+  _onButtonPressed = id => {
+    this._playSound(id),
+    id === this.state.requirement[this.state.answers.length]
+      ? this._progress(this.state.answers.concat(id))
+      : this.props.onGameOver(this.state.requirement.length - 1)
+  };
 
-        _gameOver = () => {
-            this.props.setCondition(this.state.requirement.length)
-        }
+  _progress = answers => {
+    answers.length === this.state.requirement.length
+      ? this._increaseDifficulty()
+      : this.setState({ answers });
+  };
 
-      render() {
-        const buttons = this.state.colors.map((color, index) => (
-          <ColorButton
-            key={index}
-            onButtonPressed={this._onButtonPressed}
-            id={index}
-            bgColor={color}
-          />
-        ));
-    
-        return (
-            <View style={styles.container}>
-                <Text>score : {this.state.requirement.length - 1}</Text>
-                <Text>requirement : {this.state.requirement}</Text>
-                <Text>input : {this.state.input}</Text>
-                <View style={styles.buttonContainer}>
-                  {buttons}
-                </View>
-                
-            </View>
-        );
-      }
-    }
+  render() {
+    const buttons = this.state.colors.map((color, index) => (
+      <ColorButton
+        key={index}
+        onButtonPressed={this._onButtonPressed}
+        id={index}
+        bgColor={color}
+        opacity={this.state.opacity[index]}
+        disabled={this.state.buttonsDisabled}
+      />
+    ));
+
+    const { width, height } = Dimensions.get("window");
+
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>
+          Score: {this.state.requirement.length - 1}
+        </Text>
+        <View
+          style={[
+            styles.gameBoard,
+            {
+              width: Math.min(width, height),
+              height: Math.min(width, height)
+            }
+          ]}
+        >
+          {buttons}
+        </View>
+      </View>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: Platform.OS == "ios" ? 20 : 0,
     justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5FCFF"
+    alignItems: "center"
   },
-  buttonContainer: {
-    width: "70%",
-    height: "70%",
-    flexWrap: "wrap",
+  title: {
+    fontSize: 36
+  },
+  gameBoard: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: "center",
-    margin: 10
-  },
-  instructions: {
-    textAlign: "center",
-    color: "#333333",
-    marginBottom: 5
+    flexWrap: "wrap"
   }
 });
 
-export default GamePlay ;
+export default GamePlay;

@@ -1,17 +1,15 @@
-
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import GamePlay from './containers/GamePlay';
-import StyleDemo from './containers/StyleDemo';
+import GamePlay from "./containers/GamePlay";
 import GameOver from "./containers/GameOver";
+import StyleDemo from "./containers/StyleDemo";
 
+// Component
+// Props
+// State
+
+// Function component
 const Text2 = props => (
   <View>
     <Text>
@@ -24,27 +22,22 @@ const Text2 = props => (
 // Class component
 export default class App extends Component {
   state = {
-    isPlaying: true,
-    score: 0,
+    isPlaying: true
   };
 
-  _setCondition = (score) => {
+  _onGameOver = score =>
     this.setState({
-      isPlaying: !this.state.isPlaying,
-      score: score,
-    })
-  }
+      isPlaying: false,
+      score
+    });
+
+  _onReplay = () => this.setState({ isPlaying: true });
 
   render() {
-
-    // return (
-    //   <StyleDemo/>
-    // );
-
-    return (
-        this.state.isPlaying ?
-        <GamePlay setCondition={this._setCondition} /> :
-        <GameOver setCondition={this._setCondition} finalScore={this.state.score - 1}/>
+    return this.state.isPlaying ? (
+      <GamePlay onGameOver={this._onGameOver} />
+    ) : (
+      <GameOver score={this.state.score} onReplay={this._onReplay} />
     );
   }
 }
