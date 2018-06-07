@@ -25,6 +25,43 @@
                     "ratio": 0.001
                 }
             ]
-        }
+        },
+        {
+            "id": 1,
+            "name": "Weight",
+            "units": [
+                {
+                    "id": 0,
+                    "name": "Kilogram",
+                    "ratio": 1
+                },
+                {
+                    "id": 1,
+                    "name": "Gram",
+                    "ratio": 0.001
+                },
+                {
+                    "id": 2,
+                    "name": "Ton",
+                    "ratio": 1000
+                }
+            ] 
+        },
+        {
+            "id": 2,
+            "name": "Currency",
+            "units": [
+                {
+                    "id": 0,
+                    "name": "VND",
+                    "ratio": 1
+                },
+                {
+                    "id": 1,
+                    "name": "USD",
+                    "ratio": 22000
+                }
+            ]
+        },
     ]
 }

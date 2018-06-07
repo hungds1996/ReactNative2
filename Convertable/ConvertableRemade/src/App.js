@@ -12,23 +12,23 @@ import {
   View
 } from 'react-native';
 
-import { commonStyles } from './theme'
+import { commonStyles } from './theme';
 import ConvertScreen from './containers/ConvertScreen';
+import { createStore, combineReducers } from 'redux';
+import { Provider } from 'react-redux';
+import reducers from './reducers/';
+
+import ScreenWrapper from './containers/ScreenWrapper';
+
+const appReducer = combineReducers(reducers);
+const store = createStore(appReducer);
 
 export default class App extends Component {
   render() {
     return (
-      <View
-        style={[
-          commonStyles.wrapper,
-          commonStyles.bgPrimary,
-          {
-            paddingTop : Platform.OS === "ios" ? 20 : 0,
-          }
-        ]}
-      >
-        <ConvertScreen/>
-      </View>
+      <Provider store={store}>
+        <ScreenWrapper/>
+      </Provider>
     );
   }
 }

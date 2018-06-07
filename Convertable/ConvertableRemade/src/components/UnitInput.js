@@ -1,7 +1,10 @@
 import React, { PureComponent } from "react";
 import { StyleSheet, Text, View, Button, TextInput } from "react-native";
 import { commonStyles, primaryDark } from "../theme";
-import Big from 'big.js'
+import Big from 'big.js';
+import { connect } from 'react-redux';
+import { createChangeBaseValueAction } from '../actions/'
+
 class UnitInput extends PureComponent {
   state = {
     inputValue: (Big(this.props.baseValue).div(this.props.unit.ratio)).toString()
@@ -20,7 +23,7 @@ class UnitInput extends PureComponent {
   _onChange = value => {
     this.setState({ inputValue: value }, () => {
       if (!isNaN(parseFloat(value))) {
-        this.props.onChangeBaseValue(Big(value).times(this.props.unit.ratio));
+        this.props.createChangeBaseValueAction(Big(value).times(this.props.unit.ratio));
       }
     });
   };
@@ -48,4 +51,11 @@ class UnitInput extends PureComponent {
   }
 }
 
-export default UnitInput;
+const mapAppStateToProps = ({ baseValue }) => ({ baseValue })
+
+// const mapDispatchToProps = dispatch => ({
+//   createChangeBaseValueAction: newValue => 
+//     dispatch(createChangeBaseValueAction(newValue))
+// });
+
+export default connect(mapAppStateToProps, { createChangeBaseValueAction })(UnitInput);

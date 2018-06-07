@@ -22,4 +22,7 @@ export const commonStyles = StyleSheet.create({
     horizontalPadding : {
         paddingHorizontal : 5,
     },
+    button: {
+        backgroundColor: 'transparent'
+    },
 });
